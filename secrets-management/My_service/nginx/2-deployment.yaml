@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-deployment-event
+  namespace: production
+spec:
+  serviceName: "nginx"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx-deployment-event
+      labels:
+        app: nginx
+    spec:
+      serviceAccountName: nginx
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: my-api-token
+          mountPath: /mnt/api-token
+          readOnly: true
+        env:
+        - name: API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-token
+              key: SECRET_TOKEN
+      volumes:
+      - name: my-api-token
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: aws-secret-event
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-deployment-email
+  namespace: production
+spec:
+  serviceName: "nginx"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx-deployment-email
+      labels:
+        app: nginx
+    spec:
+      serviceAccountName: nginx
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: my-api-token
+          mountPath: /mnt/api-token
+          readOnly: true
+        env:
+        - name: API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: api-token
+              key: SECRET_TOKEN
+      volumes:
+      - name: my-api-token
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: aws-secret-email

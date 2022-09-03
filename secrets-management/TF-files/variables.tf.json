@@ -1,0 +1,9 @@
+{
+    "variable": {
+       "oidc_arn": {
+          "default": "https://oidc.eks.*.amazonaws.com/id/*"
+          }
+    }
+ }
+  
+  
